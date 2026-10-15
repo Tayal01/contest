@@ -138,13 +138,18 @@ def reseed_graph():
         raise HTTPException(status_code=500, detail=f"Re-seed failed: {str(e)}")
 
 
-# Serve static frontend files
-if FRONTEND_DIR.exists():
+# Serve React frontend build (dist) or development static files
+DIST_DIR = FRONTEND_DIR / "dist"
+if (DIST_DIR / "assets").exists():
+    app.mount("/assets", StaticFiles(directory=str(DIST_DIR / "assets")), name="assets")
+elif FRONTEND_DIR.exists():
     app.mount("/static", StaticFiles(directory=str(FRONTEND_DIR)), name="static")
 
 
 @app.api_route("/", methods=["GET", "HEAD"])
 def serve_index():
+    if (DIST_DIR / "index.html").exists():
+        return FileResponse(DIST_DIR / "index.html")
     index_file = FRONTEND_DIR / "index.html"
     if index_file.exists():
         return FileResponse(index_file)

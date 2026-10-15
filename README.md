@@ -167,11 +167,25 @@ cp .env.example .env
 Add your free [Groq API Key](https://console.groq.com) or OpenAI Key.  
 *(Note: If no API key is provided, the application runs seamlessly in Direct FalkorDB Tool Mode!)*
 
-### 4. Start Backend & UI
+### 4. Start Application
+
+**Option A — Direct Production Mode (FastAPI serves compiled React UI):**
 ```bash
-uvicorn backend.main:app --host 0.0.0.0 --port 8000
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 --reload
 ```
 Open **`http://localhost:8000`** in your browser!
+
+**Option B — Frontend Dev Mode (Vite HMR on port 5173):**
+```bash
+# Terminal 1: Backend
+uvicorn backend.main:app --port 8000
+
+# Terminal 2: React Frontend with HMR
+cd frontend
+npm install
+npm run dev
+```
+Open **`http://localhost:5173`**!
 
 ---
 
@@ -184,12 +198,17 @@ who-knows-what/
 │   ├── graph.py         # FalkorDB connection & Cypher tools
 │   ├── agent.py         # LLM tool-calling & deterministic fallback
 │   └── prompts.py       # System prompt & tool JSON schema
-├── frontend/
-│   ├── index.html       # Single-page web UI
-│   ├── styles.css       # Dark mode glassmorphism styles
-│   └── app.js           # Client interaction & live graph metrics
+├── frontend/            # React 19 + Vite Single Page Application
+│   ├── src/
+│   │   ├── components/  # Header, DemoPrompts, ChatMessage, Sidebar, ChatInput
+│   │   ├── App.jsx      # Main application state & chat orchestrator
+│   │   ├── App.css      # Dark glassmorphic design system
+│   │   └── index.css    # Core design tokens
+│   ├── dist/            # Pre-compiled bundle ready for immediate execution
+│   ├── package.json
+│   └── vite.config.js   # Vite dev server with proxy to backend :8000
 ├── data/
-│   ├── northstar.json   # Northstar Labs fake company dataset
+│   ├── northstar.json   # Northstar Labs company dataset
 │   └── seed.py          # Script to reset & seed FalkorDB graph
 ├── scripts/
 │   └── demo_questions.md# Verified demo questions and expected paths
@@ -202,4 +221,4 @@ who-knows-what/
 ---
 
 ## ⚖️ License & Disclosure
-Built for Graph Hacks: Context for AI Agents. Fake data only. Disclosures documented in [DISCLOSURE.md](./DISCLOSURE.md).
+Built for Graph Hacks: Context for AI Agents. Repository: [https://github.com/Tayal01/contest](https://github.com/Tayal01/contest). Fake data only. Disclosures documented in [DISCLOSURE.md](./DISCLOSURE.md).
