@@ -1,0 +1,290 @@
+{
+  "people": [
+    {
+      "name": "Asha Patel",
+      "role": "Staff Backend Engineer",
+      "email": "asha@northstarlabs.internal",
+      "skills": ["Go", "Distributed Systems", "Auth", "Security", "PostgreSQL"],
+      "team": "Platform",
+      "works_on": ["Onboarding", "Payments"],
+      "owns": ["Login"]
+    },
+    {
+      "name": "Rohan Sharma",
+      "role": "Senior Fintech Engineer",
+      "email": "rohan@northstarlabs.internal",
+      "skills": ["Python", "PostgreSQL", "Fintech", "Payment Gateways", "Double-Entry"],
+      "team": "Payments",
+      "works_on": ["Payments"],
+      "owns": ["Ledger"]
+    },
+    {
+      "name": "Meera Rao",
+      "role": "Lead Mobile Engineer",
+      "email": "meera@northstarlabs.internal",
+      "skills": ["React Native", "iOS", "GraphQL", "TypeScript", "Performance"],
+      "team": "Mobile",
+      "works_on": ["Mobile App"],
+      "owns": []
+    },
+    {
+      "name": "Vikram Sethi",
+      "role": "Principal SRE",
+      "email": "vikram@northstarlabs.internal",
+      "skills": ["Kubernetes", "Kafka", "Observability", "Prometheus", "Incident Response"],
+      "team": "Platform",
+      "works_on": ["Infra"],
+      "owns": ["Notify"]
+    },
+    {
+      "name": "Priya Nair",
+      "role": "Customer Support Lead",
+      "email": "priya@northstarlabs.internal",
+      "skills": ["Customer Escalations", "Incident Management", "SLA Monitoring"],
+      "team": "Support",
+      "works_on": [],
+      "owns": []
+    },
+    {
+      "name": "Arjun Verma",
+      "role": "Frontend Intern",
+      "email": "arjun@northstarlabs.internal",
+      "skills": ["React", "TypeScript", "HTML/CSS"],
+      "team": "Mobile",
+      "works_on": ["Mobile App"],
+      "owns": []
+    },
+    {
+      "name": "Kabir Das",
+      "role": "Security Engineer",
+      "email": "kabir@northstarlabs.internal",
+      "skills": ["AppSec", "Cryptography", "OAuth2", "WebAuthn"],
+      "team": "Platform",
+      "works_on": ["Infra"],
+      "owns": []
+    },
+    {
+      "name": "Elena Rostova",
+      "role": "Senior Frontend Engineer",
+      "email": "elena@northstarlabs.internal",
+      "skills": ["Next.js", "React", "Tailwind CSS", "Checkout UX"],
+      "team": "Payments",
+      "works_on": ["Payments"],
+      "owns": ["Checkout Gateway"]
+    },
+    {
+      "name": "Dev Kapoor",
+      "role": "Data Platform Engineer",
+      "email": "dev@northstarlabs.internal",
+      "skills": ["ClickHouse", "dbt", "Airflow", "ETL Pipelines"],
+      "team": "Platform",
+      "works_on": ["Data Pipeline"],
+      "owns": ["Warehouse"]
+    },
+    {
+      "name": "Sarah Jenkins",
+      "role": "Principal Product Manager",
+      "email": "sarah@northstarlabs.internal",
+      "skills": ["Fintech Strategy", "Product Roadmapping", "User Research"],
+      "team": "Payments",
+      "works_on": ["Payments", "Mobile App"],
+      "owns": []
+    },
+    {
+      "name": "Marcus Vance",
+      "role": "VP of Engineering",
+      "email": "marcus@northstarlabs.internal",
+      "skills": ["System Architecture", "Org Design", "Tech Governance"],
+      "team": "Platform",
+      "works_on": ["Infra"],
+      "owns": ["App API"]
+    },
+    {
+      "name": "Tara Chen",
+      "role": "Staff QA Engineer",
+      "email": "tara@northstarlabs.internal",
+      "skills": ["Automated Testing", "Cypress", "Load Testing", "CI/CD"],
+      "team": "Support",
+      "works_on": ["Payments", "Mobile App"],
+      "owns": []
+    }
+  ],
+  "teams": [
+    { "name": "Platform" },
+    { "name": "Payments" },
+    { "name": "Mobile" },
+    { "name": "Support" }
+  ],
+  "projects": [
+    { "name": "Payments", "status": "active" },
+    { "name": "Mobile App", "status": "active" },
+    { "name": "Onboarding", "status": "in-progress" },
+    { "name": "Infra", "status": "maintenance" },
+    { "name": "Data Pipeline", "status": "active" }
+  ],
+  "systems": [
+    { "name": "Login", "criticality": "tier-1 critical" },
+    { "name": "Ledger", "criticality": "tier-1 critical" },
+    { "name": "Notify", "criticality": "tier-2 medium" },
+    { "name": "App API", "criticality": "tier-1 critical" },
+    { "name": "Warehouse", "criticality": "tier-3 low" },
+    { "name": "Checkout Gateway", "criticality": "tier-1 critical" }
+  ],
+  "system_dependencies": [
+    { "from": "App API", "to": "Login" },
+    { "from": "App API", "to": "Notify" },
+    { "from": "Ledger", "to": "Login" },
+    { "from": "Checkout Gateway", "to": "Ledger" },
+    { "from": "Checkout Gateway", "to": "Notify" },
+    { "from": "Warehouse", "to": "Ledger" }
+  ],
+  "project_uses": [
+    { "project": "Payments", "system": "Ledger" },
+    { "project": "Payments", "system": "Login" },
+    { "project": "Payments", "system": "Checkout Gateway" },
+    { "project": "Mobile App", "system": "App API" },
+    { "project": "Onboarding", "system": "Login" },
+    { "project": "Data Pipeline", "system": "Warehouse" }
+  ],
+  "tickets": [
+    {
+      "key": "PAY-18",
+      "title": "Ledger timeout on refunds during high load",
+      "status": "open",
+      "opened_on": "2026-10-10",
+      "about": "Payments",
+      "assignee": "Rohan Sharma"
+    },
+    {
+      "key": "PAY-24",
+      "title": "Webhook retry exponential backoff tuning",
+      "status": "open",
+      "opened_on": "2026-10-12",
+      "about": "Payments",
+      "assignee": "Rohan Sharma"
+    },
+    {
+      "key": "SEC-42",
+      "title": "Audit failed login rate limiting bypass",
+      "status": "open",
+      "opened_on": "2026-10-11",
+      "about": "Login",
+      "assignee": "Asha Patel"
+    },
+    {
+      "key": "OPS-105",
+      "title": "Notify Kafka consumer lag alert threshold",
+      "status": "open",
+      "opened_on": "2026-10-13",
+      "about": "Notify",
+      "assignee": "Vikram Sethi"
+    },
+    {
+      "key": "MOB-88",
+      "title": "Biometric login crash on iOS 20 beta",
+      "status": "open",
+      "opened_on": "2026-10-14",
+      "about": "Mobile App",
+      "assignee": "Meera Rao"
+    },
+    {
+      "key": "TKT-12",
+      "title": "Customer complaints regarding refund delays",
+      "status": "open",
+      "opened_on": "2026-10-14",
+      "about": "Ledger",
+      "assignee": "Priya Nair"
+    },
+    {
+      "key": "PAY-09",
+      "title": "Add Apple Pay checkout button to web drawer",
+      "status": "closed",
+      "opened_on": "2026-09-20",
+      "about": "Payments",
+      "assignee": "Elena Rostova"
+    },
+    {
+      "key": "INF-33",
+      "title": "Upgrade Kubernetes ingress controller to v1.11",
+      "status": "closed",
+      "opened_on": "2026-09-28",
+      "about": "Infra",
+      "assignee": "Vikram Sethi"
+    }
+  ],
+  "decisions": [
+    {
+      "title": "Require 2FA on Login",
+      "decided_on": "2026-09-12",
+      "summary": "Mandate TOTP and WebAuthn 2FA for all internal and customer accounts before Q4",
+      "made_by": "Asha Patel",
+      "about": "Login"
+    },
+    {
+      "title": "Migrate Ledger to Immutable Double-Entry",
+      "decided_on": "2026-08-20",
+      "summary": "Adopt append-only ledger schema for all transaction audits with strict idempotency",
+      "made_by": "Rohan Sharma",
+      "about": "Ledger"
+    },
+    {
+      "title": "Deprecate SMS Alerts in Favor of Push Notifications",
+      "decided_on": "2026-09-01",
+      "summary": "Reduce SMS provider costs by prioritizing push alerts via Notify service",
+      "made_by": "Vikram Sethi",
+      "about": "Notify"
+    },
+    {
+      "title": "Switch Mobile App Network Layer to GraphQL",
+      "decided_on": "2026-07-15",
+      "summary": "Adopt Apollo Client and unified GraphQL gateway for Mobile App client queries",
+      "made_by": "Meera Rao",
+      "about": "Mobile App"
+    },
+    {
+      "title": "Zero Downtime Deployments for App API",
+      "decided_on": "2026-08-30",
+      "summary": "Enforce blue-green deployment rolling strategy on Kubernetes for App API",
+      "made_by": "Marcus Vance",
+      "about": "App API"
+    }
+  ],
+  "documents": [
+    {
+      "title": "Login Service Disaster Recovery Runbook",
+      "kind": "runbook",
+      "summary": "Failover procedures and secret rotation protocol for Login service",
+      "describes": "Login"
+    },
+    {
+      "title": "Ledger Financial Reconciliation RFC",
+      "kind": "RFC",
+      "summary": "Technical specification for midnight automated reconciliation audits",
+      "describes": "Ledger"
+    },
+    {
+      "title": "Notification Service Architecture Wiki",
+      "kind": "wiki",
+      "summary": "High throughput notification delivery pipeline design and rate limits",
+      "describes": "Notify"
+    },
+    {
+      "title": "Payments Integration & Onboarding Guide",
+      "kind": "documentation",
+      "summary": "Developer guide for new services integrating with Payments and Checkout",
+      "describes": "Payments"
+    },
+    {
+      "title": "Mobile App Release Procedure",
+      "kind": "runbook",
+      "summary": "Weekly release cadence, TestFlight rollout, and hotfix approval flow",
+      "describes": "Mobile App"
+    },
+    {
+      "title": "App API Gateway Incident Escalation Matrix",
+      "kind": "runbook",
+      "summary": "On-call escalation tree and severity classification for App API incidents",
+      "describes": "App API"
+    }
+  ]
+}
