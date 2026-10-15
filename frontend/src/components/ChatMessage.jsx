@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { motion } from 'framer-motion';
 import { 
   Bot, 
   User, 
@@ -23,7 +24,12 @@ export default function ChatMessage({ message }) {
   // 1. Welcome Card
   if (message.type === 'welcome') {
     return (
-      <div className="message-card agent-welcome">
+      <motion.div 
+        className="message-card agent-welcome"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.25 }}
+      >
         <div className="card-avatar agent-avatar">
           <Bot size={22} />
         </div>
@@ -60,14 +66,19 @@ export default function ChatMessage({ message }) {
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   // 2. User Message
   if (message.type === 'user') {
     return (
-      <div className="message-card user-message-card">
+      <motion.div 
+        className="message-card user-message-card"
+        initial={{ opacity: 0, x: 12 }}
+        animate={{ opacity: 1, x: 0 }}
+        transition={{ duration: 0.2 }}
+      >
         <div className="card-avatar user-avatar">
           <User size={20} />
         </div>
@@ -78,14 +89,18 @@ export default function ChatMessage({ message }) {
           </div>
           <div className="user-text">{message.text}</div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   // 3. Loading Skeleton
   if (message.type === 'loading') {
     return (
-      <div className="message-card agent-response-card loading-card">
+      <motion.div 
+        className="message-card agent-response-card loading-card"
+        initial={{ opacity: 0, y: 8 }}
+        animate={{ opacity: 1, y: 0 }}
+      >
         <div className="card-avatar agent-avatar pulse-avatar">
           <Bot size={22} />
         </div>
@@ -103,14 +118,18 @@ export default function ChatMessage({ message }) {
             <div className="skeleton-line" style={{ width: '92%' }}></div>
           </div>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
   // 4. Error Message
   if (message.type === 'error') {
     return (
-      <div className="message-card error-card">
+      <motion.div 
+        className="message-card error-card"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+      >
         <div className="card-avatar error-avatar">⚠️</div>
         <div className="card-body">
           <div className="card-header-line">
@@ -118,7 +137,7 @@ export default function ChatMessage({ message }) {
           </div>
           <p style={{ color: '#fca5a5' }}>{message.error || 'Failed to query FalkorDB.'}</p>
         </div>
-      </div>
+      </motion.div>
     );
   }
 
@@ -140,7 +159,6 @@ export default function ChatMessage({ message }) {
   };
 
   const renderPathSegments = (pathStr) => {
-    // Regex splits path segments: Asha Patel —[:OWNS]→ Login ←[:DEPENDS_ON]— App API
     const parts = pathStr.split(/(—\[:.*?\]→|←\[:.*?\]—)/g);
     return parts.map((part, i) => {
       if (part.startsWith('—[:') || part.startsWith('←[:')) {
@@ -162,7 +180,12 @@ export default function ChatMessage({ message }) {
   };
 
   return (
-    <div className="message-card agent-response-card">
+    <motion.div 
+      className="message-card agent-response-card"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <div className="card-avatar agent-avatar">
         <Bot size={22} />
       </div>
@@ -293,6 +316,6 @@ export default function ChatMessage({ message }) {
           </div>
         )}
       </div>
-    </div>
+    </motion.div>
   );
 }

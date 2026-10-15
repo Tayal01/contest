@@ -1,0 +1,11 @@
+{
+  "name": "who-knows-what",
+  "version": "2.0.0",
+  "description": "Who Knows What — FalkorDB Company Brain Agent",
+  "private": true,
+  "scripts": {
+    "start": "bash start.sh",
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build"
+  }
+}

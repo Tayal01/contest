@@ -4,7 +4,18 @@ Track 03: Company Brain (Solo)
 """
 
 import os
+import sys
+import time
 from pathlib import Path
+
+# Robust sys.path bootstrapping to prevent directory-dependent import failures
+CURRENT_DIR = Path(__file__).resolve().parent
+ROOT_DIR = CURRENT_DIR.parent
+if str(ROOT_DIR) not in sys.path:
+    sys.path.insert(0, str(ROOT_DIR))
+if str(CURRENT_DIR) not in sys.path:
+    sys.path.insert(0, str(CURRENT_DIR))
+
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -15,13 +26,14 @@ from backend.agent import query_agent
 from backend.graph import northstar_graph
 from data.seed import seed as run_seed
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = ROOT_DIR
 FRONTEND_DIR = BASE_DIR / "frontend"
+DIST_DIR = FRONTEND_DIR / "dist"
 
 app = FastAPI(
     title="Who Knows What — Company Brain",
     description="FalkorDB-powered company brain agent for Graph Hacks Track 03",
-    version="1.0.0",
+    version="2.0.0",
 )
 
 # Enable CORS for local dev / client flexibility
@@ -36,6 +48,10 @@ app.add_middleware(
 
 class QuestionRequest(BaseModel):
     question: str
+
+
+class CypherQueryRequest(BaseModel):
+    query: str
 
 
 @app.get("/health")
@@ -110,7 +126,7 @@ def graph_overview():
                    type(r) AS rel,
                    labels(b)[0] AS b_label,
                    coalesce(b.name, b.title, b.key) AS b_name
-            LIMIT 100
+            LIMIT 150
         """)
         links = []
         for row in res.result_set:
@@ -126,6 +142,70 @@ def graph_overview():
         raise HTTPException(status_code=500, detail=f"Graph overview error: {str(e)}")
 
 
+@app.get("/graph/nodes")
+def get_graph_nodes(label: str = ""):
+    """
+    Returns nodes and their properties, optionally filtered by label.
+    """
+    try:
+        graph = northstar_graph.get_graph()
+        if label:
+            query = f"MATCH (n:{label}) RETURN n LIMIT 50"
+        else:
+            query = "MATCH (n) RETURN labels(n)[0] AS label, properties(n) AS props LIMIT 100"
+        
+        result = graph.query(query)
+        nodes = []
+        for row in result.result_set:
+            if label:
+                node_obj = row[0]
+                nodes.append({
+                    "label": label,
+                    "properties": node_obj.properties if hasattr(node_obj, "properties") else str(node_obj)
+                })
+            else:
+                nodes.append({
+                    "label": row[0],
+                    "properties": row[1]
+                })
+        return {"nodes": nodes, "count": len(nodes)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error fetching nodes: {str(e)}")
+
+
+@app.post("/graph/query")
+def execute_raw_cypher(payload: CypherQueryRequest):
+    """
+    Executes a raw Cypher query directly on FalkorDB for the Cypher Playground.
+    """
+    q = payload.query.strip()
+    if not q:
+        raise HTTPException(status_code=400, detail="Cypher query cannot be empty.")
+    try:
+        start_t = time.perf_counter()
+        graph = northstar_graph.get_graph()
+        result = graph.query(q)
+        duration_ms = round((time.perf_counter() - start_t) * 1000, 2)
+        columns = [str(c[1]) if isinstance(c, (list, tuple)) and len(c) >= 2 else str(c) for c in result.header]
+        rows = []
+        for raw_row in result.result_set:
+            row_dict = {}
+            for col, val in zip(columns, raw_row):
+                if hasattr(val, "properties"):
+                    row_dict[col] = val.properties
+                else:
+                    row_dict[col] = val
+            rows.append(row_dict)
+        return {
+            "columns": columns,
+            "rows": rows,
+            "count": len(rows),
+            "latency_ms": duration_ms,
+        }
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=f"Cypher error: {str(e)}")
+
+
 @app.post("/graph/reseed")
 def reseed_graph():
     """
@@ -139,7 +219,6 @@ def reseed_graph():
 
 
 # Serve React frontend build (dist) or development static files
-DIST_DIR = FRONTEND_DIR / "dist"
 if (DIST_DIR / "assets").exists():
     app.mount("/assets", StaticFiles(directory=str(DIST_DIR / "assets")), name="assets")
 elif FRONTEND_DIR.exists():
@@ -154,3 +233,9 @@ def serve_index():
     if index_file.exists():
         return FileResponse(index_file)
     return {"message": "Who Knows What backend is active. Frontend UI loading..."}
+
+
+if __name__ == "__main__":
+    import uvicorn
+    # Allows running directly via `python backend/main.py` or `python main.py`
+    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, reload=True)

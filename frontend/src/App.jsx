@@ -1,12 +1,17 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import Header from './components/Header';
 import DemoPrompts from './components/DemoPrompts';
 import ChatMessage from './components/ChatMessage';
 import ChatInput from './components/ChatInput';
 import Sidebar from './components/Sidebar';
+import GraphExplorer from './components/GraphExplorer';
+import CypherPlayground from './components/CypherPlayground';
+import SchemaView from './components/SchemaView';
 import './App.css';
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState('chat'); // 'chat' | 'explorer' | 'cypher' | 'schema'
   const [messages, setMessages] = useState([
     { id: 'welcome', type: 'welcome' },
   ]);
@@ -23,10 +28,12 @@ export default function App() {
   };
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages, isLoading]);
+    if (activeTab === 'chat') {
+      scrollToBottom();
+    }
+  }, [messages, isLoading, activeTab]);
 
-  // Fetch initial health and graph statistics
+  // Fetch health and graph statistics
   const fetchStatusAndStats = async () => {
     try {
       const healthRes = await fetch('/health');
@@ -58,10 +65,10 @@ export default function App() {
   const handleSendMessage = async (queryText) => {
     if (!queryText.trim() || isLoading) return;
 
+    setActiveTab('chat'); // ensure we are in chat view
     const userMsgId = 'user-' + Date.now();
     const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    // Add user message & loading card
     setMessages((prev) => [
       ...prev,
       { id: userMsgId, type: 'user', text: queryText, timestamp },
@@ -123,48 +130,103 @@ export default function App() {
 
   return (
     <div className="app-layout">
-      {/* 1. Header */}
+      {/* 1. Header with Tab Navigation */}
       <Header
         dbStatus={dbStatus}
         onReseed={handleReseed}
         isReseeding={isReseeding}
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
       />
 
-      {/* 2. Main Workspace (Chat + Sidebar) */}
-      <main className="main-content">
-        <section className="chat-section">
-          {/* Quick Demo Prompts */}
-          <DemoPrompts
-            onSelectPrompt={handleSendMessage}
-            disabled={isLoading}
-          />
+      {/* 2. Main Tab Content Area */}
+      <main className="main-content-wrapper">
+        <AnimatePresence mode="wait">
+          {activeTab === 'chat' && (
+            <motion.div 
+              key="chat-tab"
+              className="tab-pane-chat"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.2 }}
+            >
+              <section className="chat-section">
+                {/* Quick Demo Prompts */}
+                <DemoPrompts
+                  onSelectPrompt={handleSendMessage}
+                  disabled={isLoading}
+                />
 
-          {/* Conversation History */}
-          <div className="conversation-container">
-            {messages.map((msg) => (
-              <ChatMessage key={msg.id} message={msg} />
-            ))}
+                {/* Conversation History */}
+                <div className="conversation-container">
+                  {messages.map((msg) => (
+                    <ChatMessage key={msg.id} message={msg} />
+                  ))}
 
-            {isLoading && (
-              <ChatMessage message={{ type: 'loading' }} />
-            )}
+                  {isLoading && (
+                    <ChatMessage message={{ type: 'loading' }} />
+                  )}
 
-            <div ref={messagesEndRef} />
-          </div>
+                  <div ref={messagesEndRef} />
+                </div>
 
-          {/* Sticky Input */}
-          <ChatInput
-            onSendMessage={handleSendMessage}
-            isLoading={isLoading}
-            llmActive={llmActive}
-          />
-        </section>
+                {/* Sticky Input */}
+                <ChatInput
+                  onSendMessage={handleSendMessage}
+                  isLoading={isLoading}
+                  llmActive={llmActive}
+                />
+              </section>
 
-        {/* Right Sidebar: Graph Metrics & Schema Legend */}
-        <Sidebar
-          stats={graphStats}
-          onSelectSample={handleSendMessage}
-        />
+              {/* Right Sidebar: Graph Metrics & Schema Legend */}
+              <Sidebar
+                stats={graphStats}
+                onSelectSample={handleSendMessage}
+              />
+            </motion.div>
+          )}
+
+          {activeTab === 'explorer' && (
+            <motion.div 
+              key="explorer-tab"
+              className="tab-pane-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <GraphExplorer onAskAbout={handleSendMessage} />
+            </motion.div>
+          )}
+
+          {activeTab === 'cypher' && (
+            <motion.div 
+              key="cypher-tab"
+              className="tab-pane-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <CypherPlayground />
+            </motion.div>
+          )}
+
+          {activeTab === 'schema' && (
+            <motion.div 
+              key="schema-tab"
+              className="tab-pane-full"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+            >
+              <SchemaView
+                onReseed={handleReseed}
+                isReseeding={isReseeding}
+                dbStatus={dbStatus}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </main>
 
       {/* 3. Footer */}
