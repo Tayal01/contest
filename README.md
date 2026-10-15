@@ -4,7 +4,7 @@
 
 **Hackathon:** [Graph Hacks: Context for AI Agents](https://www.wemakedevs.org/hackathons/falkordb) (WeMakeDevs × FalkorDB)  
 **Track:** Track 03 — Company Brain (Solo)  
-**Author:** Lakshay Tayal  
+**Author:** [Lakshay Tayal](https://github.com/tayal01)  
 
 ---
 
